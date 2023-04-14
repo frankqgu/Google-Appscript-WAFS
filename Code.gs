@@ -11,23 +11,18 @@ function getStudents() {
 
 function clockIn(student) {
   
-  //DEFINE ALL ACTIVE SHEETS
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  //DEFINE MAIN SHEET          
+          
   var mainSheet = ss.getSheetByName("MAIN");
 
-  //LAST ROW ON MAIN SHEET
   var lastRow = mainSheet.getLastRow();
   
-  //Define Return Variables
   var return_date = '';
   var error = 'SUCCESS';
   var return_array = [];
 
   for (var j = 2; j <= lastRow; j++)
   {
-    // CHECK CLOCK IN
     if(student ==  mainSheet.getRange(j, 1).getValue() && mainSheet.getRange(j,3).getValue() == '')
     {
       error = 'Need to Sign In before Signing Out';
@@ -40,7 +35,6 @@ function clockIn(student) {
   var new_date = new Date();
   return_date = getDate(new_date);
   
-  // ADD CLOCK IN RECORD
   mainSheet.getRange(lastRow+1,1).setValue(student)
   .setFontSize(12);
   mainSheet.getRange(lastRow+1,2).setValue(new_date)
@@ -79,13 +73,10 @@ function getDate(date_in)
 
 function clockOut(student) {
   
-  //DEFINE ALL ACTIVE SHEETS
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  //DEFINE MAIN SHEET          
+       
   var mainSheet = ss.getSheetByName("MAIN");
 
-  //LAST ROW ON MAIN SHEET
   var lastRow = mainSheet.getLastRow();
   
   var foundRecord = false;
@@ -97,10 +88,8 @@ function clockOut(student) {
   
   for (var j = 2; j <= lastRow; j++)
   {
-    // FIND CLOCK IN RECORD
     if(student ==  mainSheet.getRange(j, 1).getValue() && mainSheet.getRange(j,3).getValue() == '')
     {
-      // UPDATE CLOCK IN RECORD
       mainSheet.getRange(j,3)
       .setValue(new_date)
       .setNumberFormat("MM/dd/yyyy hh:mm:ss A/P")
@@ -116,14 +105,12 @@ function clockOut(student) {
     
   }
   
-  // IF NO CLOCK IN RECORD
   if(foundRecord == false)
   {
     return_array.push(['Need to Sign Out First', '', student]);
     return return_array; 
   }
   
-  // CALL TOTAL HOURS
   TotalHours();
   
   return_array.push([error, return_date, student]);
@@ -133,19 +120,14 @@ function clockOut(student) {
 function TotalHours()
 {
   
-  //DEFINE ALL ACTIVE SHEETS
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  
-  //DEFINE MAIN SHEET          
+          
   var mainSheet = ss.getSheetByName("MAIN");
 
-  //LAST ROW ON MAIN SHEET
   var lastRow = mainSheet.getLastRow();
   
-  //DEFINE ARRAY
   var totals = [];
   
-  //LOOP THROUGH ALL RATES
   for (var j = 2; j <= lastRow; j++)
   {
     var rate = mainSheet.getRange(j, 4).getValue();
@@ -154,7 +136,6 @@ function TotalHours()
     
     for(var i = 0; i < totals.length; i++)
     {
-       //FOUND RECORD ADD TO TOTAL
        if(name == totals[i][0] && rate != '')
        {         
          totals[i][1] =  totals[i][1] + rate;
@@ -162,7 +143,6 @@ function TotalHours()
        }
     }
     
-    //ADD NEW RECORD, EXISTING RECORD NOT FOUND
     if(foundRecord == false && rate != '')
     {
       totals.push([name, rate]);
@@ -170,10 +150,7 @@ function TotalHours()
     
   }
   
-  //CLEAR DATA
-  //mainSheet.getRange("F5:G1000").clear();
-  
-  //DISPLAY TOTALS
+
   for(var i = 0; i < totals.length; i++)
   {
     mainSheet.getRange(2+i,8).setValue(totals[i][0]).setFontSize(12);
